@@ -18,7 +18,10 @@ class PhpunitTestCommand(sublime_plugin.WindowCommand):
 
         active_view = self.window.active_view()
 
-        return file_name, phpunit_config_path, active_view, directory
+        settings = sublime.load_settings("Preferences.sublime-settings")
+        binary = settings.get('phpunit-binary', 'phpunit')
+
+        return file_name, phpunit_config_path, active_view, directory, binary
 
     def get_current_function(self, view):
         sel = view.sel()[0]
@@ -57,33 +60,33 @@ class PhpunitTestCommand(sublime_plugin.WindowCommand):
 class RunPhpunitTestCommand(PhpunitTestCommand):
 
     def run(self, *args, **kwargs):
-        file_name, phpunit_config_path, active_view, directory = self.get_paths()
+        file_name, phpunit_config_path, active_view, directory, binary = self.get_paths()
 
-        self.run_in_terminal('cd ' + phpunit_config_path + ' && phpunit ' + file_name)
+        self.run_in_terminal('cd ' + phpunit_config_path + ' && ' + binary + ' ' + file_name)
 
 class RunAllPhpunitTestsCommand(PhpunitTestCommand):
 
     def run(self, *args, **kwargs):
-        file_name, phpunit_config_path, active_view, directory = self.get_paths()
+        file_name, phpunit_config_path, active_view, directory, binary = self.get_paths()
 
-        self.run_in_terminal('cd ' + phpunit_config_path + ' && phpunit')
+        self.run_in_terminal('cd ' + phpunit_config_path + ' && ' + binary)
 
 
 class RunSinglePhpunitTestCommand(PhpunitTestCommand):
 
     def run(self, *args, **kwargs):
-        file_name, phpunit_config_path, active_view, directory = self.get_paths()
+        file_name, phpunit_config_path, active_view, directory, binary = self.get_paths()
 
         current_function = self.get_current_function(active_view)
 
-        self.run_in_terminal('cd ' + phpunit_config_path + ' && phpunit ' + file_name + ' --filter ' + current_function)
+        self.run_in_terminal('cd ' + phpunit_config_path + ' && ' + binary + ' ' + file_name + ' --filter ' + current_function)
 
 class RunPhpunitTestsInDirCommand(PhpunitTestCommand):
 
     def run(self, *args, **kwargs):
-        file_name, phpunit_config_path, active_view, directory = self.get_paths()
+        file_name, phpunit_config_path, active_view, directory, binary = self.get_paths()
 
-        self.run_in_terminal('cd ' + phpunit_config_path + ' && phpunit ' + directory)
+        self.run_in_terminal('cd ' + phpunit_config_path + ' && ' + binary + ' ' + directory)
 
 class FindMatchingTestCommand(sublime_plugin.WindowCommand):
 
